@@ -12,7 +12,8 @@ JUMLAH_FILM_DEMO = 20
 
 # ----------------------------------------------------------------------
 # PROSES YANG DIUJI (sama untuk ketiga versi):
-# "Menampilkan daftar film published beserta judul, nama pembuat, nama kategori, jumlah vote, dan jumlah komentar."
+# "Menampilkan daftar film published beserta judul, nama pembuat,
+#  nama kategori, jumlah vote, dan jumlah komentar."
 # Hanya cara mengambil datanya yang berbeda.
 # ----------------------------------------------------------------------
 
@@ -87,6 +88,9 @@ class Command(BaseCommand):
             raise CommandError("Data awal belum ada. Jalankan dulu: python manage.py seed_data")
         pembuat = users[0]
 
+        # Catat dulu jumlah film published yang asli (dari seed_data)
+        jumlah_asli = Film.objects.filter(status=Film.Status.PUBLISHED).count()
+
         # Tambah data uji sementara agar perbedaannya terlihat jelas.
         # Semua data ini DIBATALKAN (rollback) di akhir, jadi database tidak berubah.
         for i in range(1, JUMLAH_FILM_DEMO + 1):
@@ -108,7 +112,10 @@ class Command(BaseCommand):
         jumlah_film = Film.objects.filter(status=Film.Status.PUBLISHED).count()
         self.stdout.write(self.style.MIGRATE_HEADING("\nDEMO OPTIMASI QUERY"))
         self.stdout.write("Proses : daftar film published + pembuat, kategori, jumlah vote, jumlah komentar")
-        self.stdout.write(f"Data   : {jumlah_film} film published\n")
+        self.stdout.write(
+            f"Data   : {jumlah_film} film published "
+            f"({jumlah_asli} data asli + {JUMLAH_FILM_DEMO} data uji sementara)\n"
+        )
 
         hasil_a, query_a, waktu_a = ukur(versi_sebelum)
         hasil_b, query_b, waktu_b = ukur(versi_sesudah)
