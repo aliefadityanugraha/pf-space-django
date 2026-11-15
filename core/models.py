@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
 from django.db import models
 from django.utils.text import slugify
 
@@ -26,6 +28,12 @@ class User(AbstractUser):
     class Meta:
         db_table = 'users'
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        # Superuser (mis. dari createsuperuser) otomatis berrole ADMIN agar konsisten
+        if self.is_superuser:
+            self.role = self.Role.ADMIN
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} ({self.email} - {self.role})"
@@ -69,8 +77,8 @@ class Film(models.Model):
         related_name='films',
         db_column='category_id',
     )
-    judul = models.CharField(max_length=255)
-    sinopsis = models.TextField()
+    judul = models.CharField(max_length=255, validators=[MinLengthValidator(3)])
+    sinopsis = models.TextField(validators=[MinLengthValidator(10)])
     tahun_karya = models.PositiveSmallIntegerField()
     link_video_utama = models.URLField(max_length=500)
 
@@ -91,6 +99,13 @@ class Film(models.Model):
     class Meta:
         db_table = 'films'
         ordering = ['-created_at']
+
+    def clean(self):
+        # Film yang ditolak wajib punya alasan penolakan
+        if self.status == self.Status.REJECTED and not (self.rejection_reason or "").strip():
+            raise ValidationError(
+                {"rejection_reason": "Alasan penolakan wajib diisi jika film ditolak."}
+            )
 
     def __str__(self):
         return f"{self.judul} ({self.tahun_karya}) - {self.get_status_display()}"
@@ -121,6 +136,11 @@ class Vote(models.Model):
                 name='unique_user_film_vote',
             )
         ]
+
+    def clean(self):
+        # Hanya film yang sudah dipublikasikan yang boleh di-vote
+        if self.film_id and self.film.status != Film.Status.PUBLISHED:
+            raise ValidationError("Hanya film yang sudah dipublikasikan yang bisa di-vote.")
 
     def __str__(self):
         return f"Vote oleh {self.user.name} pada '{self.film.judul}'"
