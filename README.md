@@ -165,3 +165,6 @@ Setelah semua tahapan di atas selesai, aplikasi sudah aktif dan dapat diakses me
 | Merestart server aplikasi setelah perubahan konfigurasi | `docker compose restart web` |
 | Menghentikan container (data database tetap aman di volume) | `docker compose down` |
 | Menghentikan container sekaligus menghapus volume database | `docker compose down -v` |
+
+
+Tedo Haris Candra - chek min
