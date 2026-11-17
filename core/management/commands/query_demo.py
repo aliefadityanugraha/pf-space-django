@@ -23,10 +23,10 @@ def versi_sebelum():
     for film in Film.objects.filter(status=Film.Status.PUBLISHED).order_by("film_id"):
         hasil.append((
             film.judul,
-            film.user.name,             # query baru untuk setiap film
-            film.category.name,         # query baru untuk setiap film
-            film.votes.count(),         # query baru untuk setiap film
-            film.discussions.count(),   # query baru untuk setiap film
+            film.user.name,             
+            film.category.name,         
+            film.votes.count(),         
+            film.discussions.count(),   
         ))
     return hasil
 
