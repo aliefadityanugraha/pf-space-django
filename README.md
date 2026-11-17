@@ -167,4 +167,4 @@ Setelah semua tahapan di atas selesai, aplikasi sudah aktif dan dapat diakses me
 | Menghentikan container sekaligus menghapus volume database | `docker compose down -v` |
 
 
-Tedo Haris Candra
+Tedo Haris Candra - chek min
