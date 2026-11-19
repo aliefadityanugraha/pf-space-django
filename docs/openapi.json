@@ -1,0 +1,1973 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "PF Space API",
+    "version": "1.0.0",
+    "description": "\nREST API galeri digital dan arsip karya film siswa SMKN 1 Ngasem.\n\n**Cara memakai endpoint yang terkunci:** `POST /login` -> salin `access` -> klik **Authorize** -> tempel token.\n\n| Kode | Arti |\n|---|---|\n| 200 / 201 / 204 | Berhasil / berhasil dibuat / berhasil tanpa isi |\n| 401 | Tanpa token, token tidak valid, atau token kedaluwarsa |\n| 403 | Role tidak diizinkan, atau bukan pemilik data |\n| 404 | Data tidak ditemukan |\n| 422 | Data yang dikirim tidak valid |\n"
+  },
+  "paths": {
+    "/api/register": {
+      "post": {
+        "operationId": "core_api_register",
+        "summary": "Mendaftar akun baru (role USER)",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Autentikasi"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "operationId": "core_api_login",
+        "summary": "Login: mendapat access token dan refresh token",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Autentikasi"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/refresh": {
+      "post": {
+        "operationId": "core_api_refresh",
+        "summary": "Meminta access token baru memakai refresh token",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Autentikasi"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "operationId": "core_api_profil",
+        "summary": "Profil pengguna yang sedang login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Autentikasi"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "operationId": "core_api_daftar_kategori",
+        "summary": "Daftar kategori film",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Kategori"
+        ]
+      },
+      "post": {
+        "operationId": "core_api_buat_kategori",
+        "summary": "Menambah kategori (Admin)",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryMiniOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Kategori"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/films": {
+      "get": {
+        "operationId": "core_api_daftar_film",
+        "summary": "Daftar film yang sudah dipublikasikan",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FilmOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Isi `category` dengan slug untuk menyaring, misalnya `dokumenter`.",
+        "tags": [
+          "Film"
+        ]
+      },
+      "post": {
+        "operationId": "core_api_buat_film",
+        "summary": "Membuat film baru (status awal: pending)",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmDetailOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Film"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/films/{film_id}": {
+      "get": {
+        "operationId": "core_api_detail_film",
+        "summary": "Detail film beserta pembuat, kategori, jumlah vote dan komentar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmDetailOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "description": "Film yang belum `published` tidak dapat dilihat publik (403).",
+        "tags": [
+          "Film"
+        ]
+      },
+      "put": {
+        "operationId": "core_api_ganti_film",
+        "summary": "Mengganti data film (PUT: field wajib harus lengkap)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmDetailOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Film"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "core_api_ubah_sebagian_film",
+        "summary": "Mengubah sebagian data film (PATCH: kirim field yang diubah saja)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmDetailOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Film"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilmPatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "core_api_hapus_film",
+        "summary": "Menghapus film",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Film"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/films/{film_id}/validate": {
+      "patch": {
+        "operationId": "core_api_validasi_film",
+        "summary": "Memvalidasi film: published atau rejected (Admin)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilmDetailOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Film"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/films/{film_id}/votes": {
+      "get": {
+        "operationId": "core_api_daftar_vote",
+        "summary": "Daftar vote pada sebuah film",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VoteOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Data Berelasi"
+        ]
+      }
+    },
+    "/api/films/{film_id}/discussions": {
+      "get": {
+        "operationId": "core_api_daftar_komentar",
+        "summary": "Komentar utama pada sebuah film beserta balasannya",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiscussionOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Data Berelasi"
+        ]
+      },
+      "post": {
+        "operationId": "core_api_tulis_komentar",
+        "summary": "Menulis komentar atau balasan (semua role yang login)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReplyOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Data Berelasi"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscussionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/films/{film_id}/vote": {
+      "post": {
+        "operationId": "core_api_vote_film",
+        "summary": "Vote atau batalkan vote pada film published (semua role yang login)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "film_id",
+            "schema": {
+              "title": "Film Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoteResultOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Data Berelasi"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "operationId": "core_api_daftar_user",
+        "summary": "Daftar semua pengguna (Admin)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
+    "/api/users/{user_id}/role": {
+      "patch": {
+        "operationId": "core_api_ubah_role",
+        "summary": "Mengubah role pengguna (Admin)",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "title": "User Id",
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorOut"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "role",
+          "email",
+          "is_active"
+        ],
+        "title": "UserOut",
+        "type": "object"
+      },
+      "ValidationErrorOut": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "errors": {
+            "title": "Errors"
+          }
+        },
+        "required": [
+          "detail",
+          "errors"
+        ],
+        "title": "ValidationErrorOut",
+        "type": "object"
+      },
+      "RegisterIn": {
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          },
+          "email": {
+            "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+            "title": "Email",
+            "type": "string"
+          },
+          "username": {
+            "maxLength": 150,
+            "minLength": 3,
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "minLength": 8,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "username",
+          "password"
+        ],
+        "title": "RegisterIn",
+        "type": "object"
+      },
+      "TokenOut": {
+        "properties": {
+          "access": {
+            "title": "Access",
+            "type": "string"
+          },
+          "refresh": {
+            "title": "Refresh",
+            "type": "string"
+          },
+          "token_type": {
+            "default": "Bearer",
+            "title": "Token Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access",
+          "refresh"
+        ],
+        "title": "TokenOut",
+        "type": "object"
+      },
+      "ErrorOut": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ErrorOut",
+        "type": "object"
+      },
+      "LoginIn": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginIn",
+        "type": "object"
+      },
+      "RefreshIn": {
+        "properties": {
+          "refresh": {
+            "title": "Refresh",
+            "type": "string"
+          }
+        },
+        "required": [
+          "refresh"
+        ],
+        "title": "RefreshIn",
+        "type": "object"
+      },
+      "CategoryOut": {
+        "properties": {
+          "category_id": {
+            "title": "Category Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "total_films": {
+            "title": "Total Films",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "category_id",
+          "name",
+          "slug",
+          "total_films"
+        ],
+        "title": "CategoryOut",
+        "type": "object"
+      },
+      "CategoryMiniOut": {
+        "properties": {
+          "category_id": {
+            "title": "Category Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "category_id",
+          "name",
+          "slug"
+        ],
+        "title": "CategoryMiniOut",
+        "type": "object"
+      },
+      "CategoryIn": {
+        "properties": {
+          "name": {
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CategoryIn",
+        "type": "object"
+      },
+      "FilmOut": {
+        "description": "Satu baris pada daftar film.",
+        "properties": {
+          "film_id": {
+            "title": "Film Id",
+            "type": "integer"
+          },
+          "judul": {
+            "title": "Judul",
+            "type": "string"
+          },
+          "tahun_karya": {
+            "title": "Tahun Karya",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "gambar_poster": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gambar Poster"
+          },
+          "pembuat": {
+            "title": "Pembuat",
+            "type": "string"
+          },
+          "kategori": {
+            "title": "Kategori",
+            "type": "string"
+          },
+          "total_votes": {
+            "title": "Total Votes",
+            "type": "integer"
+          },
+          "total_discussions": {
+            "title": "Total Discussions",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "film_id",
+          "judul",
+          "tahun_karya",
+          "status",
+          "pembuat",
+          "kategori",
+          "total_votes",
+          "total_discussions"
+        ],
+        "title": "FilmOut",
+        "type": "object"
+      },
+      "FilmDetailOut": {
+        "description": "Detail film beserta data berelasinya (pembuat, kategori, jumlah vote dan komentar).",
+        "properties": {
+          "film_id": {
+            "title": "Film Id",
+            "type": "integer"
+          },
+          "judul": {
+            "title": "Judul",
+            "type": "string"
+          },
+          "sinopsis": {
+            "title": "Sinopsis",
+            "type": "string"
+          },
+          "tahun_karya": {
+            "title": "Tahun Karya",
+            "type": "integer"
+          },
+          "link_video_utama": {
+            "title": "Link Video Utama",
+            "type": "string"
+          },
+          "gambar_poster": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gambar Poster"
+          },
+          "file_naskah": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Naskah"
+          },
+          "file_storyboard": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Storyboard"
+          },
+          "file_rab": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Rab"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Reason"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserMiniOut"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryMiniOut"
+          },
+          "total_votes": {
+            "title": "Total Votes",
+            "type": "integer"
+          },
+          "total_discussions": {
+            "title": "Total Discussions",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "film_id",
+          "judul",
+          "sinopsis",
+          "tahun_karya",
+          "link_video_utama",
+          "status",
+          "created_at",
+          "user",
+          "category",
+          "total_votes",
+          "total_discussions"
+        ],
+        "title": "FilmDetailOut",
+        "type": "object"
+      },
+      "UserMiniOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "role": {
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "role"
+        ],
+        "title": "UserMiniOut",
+        "type": "object"
+      },
+      "FilmIn": {
+        "description": "Body POST /films dan PUT /films/{id}.",
+        "example": {
+          "category_id": 2,
+          "gambar_poster": "films/posters/langit.jpg",
+          "judul": "Langit Terakhir di Kampus",
+          "link_video_utama": "https://www.youtube.com/watch?v=abc123",
+          "sinopsis": "Dokumenter singkat tentang hari terakhir siswa di sekolah.",
+          "tahun_karya": 2025
+        },
+        "properties": {
+          "category_id": {
+            "title": "Category Id",
+            "type": "integer"
+          },
+          "judul": {
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Judul",
+            "type": "string"
+          },
+          "sinopsis": {
+            "minLength": 10,
+            "title": "Sinopsis",
+            "type": "string"
+          },
+          "tahun_karya": {
+            "maximum": 32767,
+            "minimum": 1,
+            "title": "Tahun Karya",
+            "type": "integer"
+          },
+          "link_video_utama": {
+            "maxLength": 500,
+            "pattern": "^https?://\\S+$",
+            "title": "Link Video Utama",
+            "type": "string"
+          },
+          "gambar_poster": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Gambar Poster",
+            "type": "string"
+          },
+          "file_naskah": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Naskah"
+          },
+          "file_storyboard": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Storyboard"
+          },
+          "file_rab": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Rab"
+          }
+        },
+        "required": [
+          "category_id",
+          "judul",
+          "sinopsis",
+          "tahun_karya",
+          "link_video_utama",
+          "gambar_poster"
+        ],
+        "title": "FilmIn",
+        "type": "object"
+      },
+      "FilmPatchIn": {
+        "description": "Body PATCH /films/{id}: kirim hanya field yang diubah.",
+        "example": {
+          "judul": "Judul Baru Film"
+        },
+        "properties": {
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "judul": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judul"
+          },
+          "sinopsis": {
+            "anyOf": [
+              {
+                "minLength": 10,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sinopsis"
+          },
+          "tahun_karya": {
+            "anyOf": [
+              {
+                "maximum": 32767,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tahun Karya"
+          },
+          "link_video_utama": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "pattern": "^https?://\\S+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Link Video Utama"
+          },
+          "gambar_poster": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gambar Poster"
+          },
+          "file_naskah": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Naskah"
+          },
+          "file_storyboard": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Storyboard"
+          },
+          "file_rab": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Rab"
+          }
+        },
+        "title": "FilmPatchIn",
+        "type": "object"
+      },
+      "ValidateIn": {
+        "description": "Body PATCH /films/{id}/validate (khusus Admin).",
+        "properties": {
+          "status": {
+            "enum": [
+              "published",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "rejection_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rejection Reason"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ValidateIn",
+        "type": "object"
+      },
+      "VoteOut": {
+        "properties": {
+          "vote_id": {
+            "title": "Vote Id",
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserMiniOut"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "vote_id",
+          "user",
+          "created_at"
+        ],
+        "title": "VoteOut",
+        "type": "object"
+      },
+      "DiscussionOut": {
+        "properties": {
+          "diskusi_id": {
+            "title": "Diskusi Id",
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserMiniOut"
+          },
+          "isi_pesan": {
+            "title": "Isi Pesan",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "replies": {
+            "items": {
+              "$ref": "#/components/schemas/ReplyOut"
+            },
+            "title": "Replies",
+            "type": "array"
+          }
+        },
+        "required": [
+          "diskusi_id",
+          "user",
+          "isi_pesan",
+          "created_at",
+          "replies"
+        ],
+        "title": "DiscussionOut",
+        "type": "object"
+      },
+      "ReplyOut": {
+        "properties": {
+          "diskusi_id": {
+            "title": "Diskusi Id",
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserMiniOut"
+          },
+          "isi_pesan": {
+            "title": "Isi Pesan",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "diskusi_id",
+          "user",
+          "isi_pesan",
+          "created_at"
+        ],
+        "title": "ReplyOut",
+        "type": "object"
+      },
+      "DiscussionIn": {
+        "properties": {
+          "isi_pesan": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Isi Pesan",
+            "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          }
+        },
+        "required": [
+          "isi_pesan"
+        ],
+        "title": "DiscussionIn",
+        "type": "object"
+      },
+      "VoteResultOut": {
+        "properties": {
+          "voted": {
+            "title": "Voted",
+            "type": "boolean"
+          },
+          "total_votes": {
+            "title": "Total Votes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "voted",
+          "total_votes"
+        ],
+        "title": "VoteResultOut",
+        "type": "object"
+      },
+      "RoleIn": {
+        "properties": {
+          "role": {
+            "enum": [
+              "USER",
+              "CREATOR",
+              "ADMIN"
+            ],
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "title": "RoleIn",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "servers": []
+}
