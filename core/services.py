@@ -8,9 +8,7 @@ from django.utils.text import slugify
 from .models import Category, Discussion, Film, User, Vote
 
 
-# =====================================================================
-# 1. SERVICE UNTUK TABEL USER (users)
-# =====================================================================
+# SERVICE UNTUK TABEL USER (users)
 
 @transaction.atomic
 def register_user(
@@ -69,9 +67,7 @@ def delete_user(*, admin_user: User, target_user_id: int) -> None:
     target_user.delete()
 
 
-# =====================================================================
-# 2. SERVICE UNTUK TABEL CATEGORY (categories)
-# =====================================================================
+# SERVICE UNTUK TABEL CATEGORY (categories)
 
 @transaction.atomic
 def create_category(*, admin_user: User, name: str) -> Category:
@@ -116,9 +112,7 @@ def delete_category(*, admin_user: User, category_id: int) -> None:
     category.delete()
 
 
-# =====================================================================
-# 3. SERVICE UNTUK TABEL FILM (films)
-# =====================================================================
+# SERVICE UNTUK TABEL FILM (films)
 
 @transaction.atomic
 def create_film(
@@ -325,9 +319,8 @@ def delete_film(*, requesting_user: User, film_id: int) -> None:
     transaction.on_commit(_cleanup_files)
 
 
-# =====================================================================
-# 4. SERVICE UNTUK TABEL VOTE (votes)
-# =====================================================================
+
+# SERVICE UNTUK TABEL VOTE (votes)
 
 @transaction.atomic
 def toggle_vote(*, user: User, film_id: int) -> Tuple[bool, int]:
@@ -362,9 +355,7 @@ def get_film_votes(*, film_id: int) -> QuerySet[Vote]:
     )
 
 
-# =====================================================================
-# 5. SERVICE UNTUK TABEL DISCUSSION (discussions)
-# =====================================================================
+# SERVICE UNTUK TABEL DISCUSSION (discussions)
 
 @transaction.atomic
 def create_discussion(
